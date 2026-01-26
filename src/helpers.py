@@ -13,10 +13,11 @@ def offline_uuid_from_name(name: str) -> str:
     return str(uuid.UUID(m.hexdigest()))
 
 def format_uuid(raw_uuid: str) -> str:
-    raw = (raw_uuid or "").strip()
+    # CORRECCIÓN: .lower() es obligatorio para servidores Linux
+    raw = (raw_uuid or "").strip().lower() 
     if len(raw) == 32:
         return f"{raw[0:8]}-{raw[8:12]}-{raw[12:16]}-{raw[16:20]}-{raw[20:32]}"
-    return raw_uuid
+    return raw
 
 def find_worlds_in_dir(root_dir):
     worlds = []
