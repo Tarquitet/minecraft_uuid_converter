@@ -1,4 +1,6 @@
-# ⛏️ Minecraft UUID Converter (GUI)
+# WARNING - THIS IS ON BETA STATE
+
+⛏️ Minecraft UUID Converter (GUI)
 
 > **Una suite profesional de escritorio para migrar datos de jugadores (inventarios, estadísticas, logros y skins) entre diferentes tipos de UUID en servidores de Minecraft.**
 
