@@ -132,12 +132,26 @@ class LogicHandlers:
                 except Exception as e:
                     raise Exception(f"Error reading or parsing JSON file: {e}")
                 log(f"Reading players from '{filename}':")
+                
+                # 🛠️ CORRECCIÓN #2: Ordenar y limitar para no colapsar Tkinter
+                # Ordenamos por fecha de expiración (los más recientes primero)
+                usercache_data.sort(key=lambda x: x.get("expiresOn", ""), reverse=True)
+                
+                display_limit = 2000
+                shown_count = 0
+
                 for entry in usercache_data:
                     if not isinstance(entry, dict): continue
                     name = entry.get("name")
                     uuid_str_hyphens = entry.get("uuid")
                     if not name or not uuid_str_hyphens: continue
-                    self.app.queue.put(("add_usercache_row", (name, uuid_str_hyphens)))
+                    
+                    # Solo enviamos a la Interfaz Gráfica los primeros 2,000
+                    if shown_count < display_limit:
+                        self.app.queue.put(("add_usercache_row", (name, uuid_str_hyphens)))
+                        shown_count += 1
+
+                    # La LÓGICA INTERNA sí procesa absolutamente todos
                     uuid_str_no_hyphens = uuid_str_hyphens.replace('-', '')
                     if uuid_str_no_hyphens in playerdata_uuids_no_hyphens:
                         account_type = "Offline (Java)"
@@ -145,6 +159,9 @@ class LogicHandlers:
                         if match: account_type = "Offline (Bedrock)"
                         payload = (name, account_type, uuid_str_hyphens, "", "")
                         valid_players_from_cache.append(payload)
+
+                if len(usercache_data) > display_limit:
+                    log(f"⚠️ UI Limit: Visualizando 2,000 de {len(usercache_data)} jugadores (El análisis interno usa todos).")
                 if not valid_players_from_cache:
                     error_msg = "No UUID from the file '{filename}' matches the saved data in the 'playerdata' folder of this world.\nPlease ensure you select the correct file for:\n{world_path}".format(
                         filename=filename, world_path=world_to_scan

@@ -5,8 +5,11 @@ import re
 from .constants import BEDROCK_PREFIX_REGEX
 
 def offline_uuid_from_name(name: str) -> str:
+    # 🛠️ CORRECCIÓN #3: Blindaje de inputs (quitar espacios invisibles)
+    clean_name = name.strip()
+    
     m = hashlib.md5()
-    m.update(("OfflinePlayer:" + name).encode("utf-8"))
+    m.update(("OfflinePlayer:" + clean_name).encode("utf-8"))
     return str(uuid.UUID(m.hexdigest()))
 
 def format_uuid(raw_uuid: str) -> str:
