@@ -23,13 +23,16 @@ def process_world(world_path, conversions, create_backup, log_fn, progress_callb
                         try:
                             if os.path.exists(dst):
                                 if create_backup:
-                                    # 🛠️ CORRECCIÓN #1: Backups con Timestamp único
+                                    # CORRECCIÓN: Enviar backups a una subcarpeta aislada
+                                    backup_dir = os.path.join(folder_path, "uuid_backups")
+                                    os.makedirs(backup_dir, exist_ok=True)
+                                    
                                     timestamp = time.strftime("%Y%m%d_%H%M%S")
-                                    bak_path = f"{dst}_{timestamp}.bak"
-                                    if os.path.exists(bak_path):
-                                        os.remove(bak_path)
+                                    bak_filename = f"{uuid_to}_{timestamp}.bak"
+                                    bak_path = os.path.join(backup_dir, bak_filename)
+                                    
                                     os.rename(dst, bak_path)
-                                    log_fn(f"🛡️ Backup: {os.path.basename(dst)} -> {os.path.basename(bak_path)}")
+                                    log_fn(f"🛡️ Backup aislado en: uuid_backups/{bak_filename}")
                                 else:
                                     os.remove(dst)
                                     log_fn(f"🗑️ Removed existing target: {os.path.basename(dst)}")
