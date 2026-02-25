@@ -1,103 +1,95 @@
+---
+
+### 🇺🇸 File: `README.md` (Main English Version)
+
+````markdown
 # WARNING - THIS IS ON BETA STATE
+
+[Leer en Español (README_ES.md)](README_ES.md)
 
 ⛏️ Minecraft UUID Converter (GUI)
 
-> **Una suite profesional de escritorio para migrar datos de jugadores (inventarios, estadísticas, logros y skins) entre diferentes tipos de UUID en servidores de Minecraft.**
+> **A professional desktop suite for migrating player data (inventories, stats, advancements, and skins) between different UUID types on Minecraft servers.**
 
-**Minecraft UUID Converter** es una herramienta esencial para administradores de servidores. Permite realizar migraciones masivas y seguras de datos cuando un servidor cambia de modo (ej. Premium a No-Premium) o cuando se integran jugadores de Bedrock (GeyserMC) a Java. Todo esto a través de una interfaz gráfica moderna, rápida y segura.
+**Minecraft UUID Converter** is an essential tool for server administrators. It enables secure, bulk data migrations when a server changes modes (e.g., Premium to Non-Premium) or when integrating Bedrock (GeyserMC) players into Java. All of this is performed through a modern, fast, and secure graphical interface.
 
 ![1769448117738](images/README/1769448117738.png)
-
 ![1769448123544](images/README/1769448123544.png)
-
 ![1769448132179](images/README/1769448132179.png)
-
 ![1769448140458](images/README/1769448140458.png)
 
-## ✨ Características Principales
+## ✨ Main Features
 
-- **🔄 Conversión Bidireccional:** Soporta migraciones de Online (Premium) a Offline (Cracked), y resolución de conflictos entre cuentas de Java y Bedrock (Geyser).
-- **🧠 Auto-Cálculo de UUIDs Offline:** El algoritmo integrado genera instantáneamente los UUIDs correctos para el modo "No-Premium" usando el estándar de Mojang (MD5 de `OfflinePlayer:Nombre`).
-- **🛡️ Sistema de Backup Automático:** Nunca perderás datos. El script genera copias de seguridad (`.bak`) de los archivos originales antes de sobrescribirlos.
-- **⚡ Multihilo (Anti-Congelamiento):** La interfaz gráfica nunca se congela. El análisis profundo y la conversión de archivos ocurren en segundo plano utilizando `QueueManager` y `Threading`.
-- **📦 Auto-Instalador:** No requiere configuración compleja. Al ejecutar el programa por primera vez, detectará e instalará automáticamente las dependencias faltantes (`ttkbootstrap`, `requests`).
+- **🔄 Bidirectional Conversion:** Supports migrations from Online (Premium) to Offline (Cracked), and resolves conflicts between Java and Bedrock (Geyser) accounts.
+- **🧠 Auto-Calculation of Offline UUIDs:** Instantly generates the correct UUIDs using the Mojang standard (MD5 of `OfflinePlayer:Name`).
+- **✏️ Manual Mapping & Editing:** Allows manual editing of the target UUID to transfer progress between different accounts or correct detection errors.
+- **🛡️ Isolated Backup System:** If a name collision is detected, the script moves the old file to a `/uuid_backups/` subfolder with a timestamp to prevent accidental overwrites.
+- **⚡ Multithreaded & Optimized:** The interface never freezes. The engine processes 100% of the database in the background, while the GUI remains fluid by limiting the preview to the 2,000 most recent records.
+- **📦 Auto-Installer:** Automatically detects and installs missing dependencies (`ttkbootstrap`, `requests`) upon execution.
 
 ---
 
-## ⚙️ Requisitos e Instalación
+## ⚙️ Requirements and Installation
 
-**Requisitos del sistema:**
+**System Requirements:**
 
-- Python 3.8 o superior.
-- Acceso a la carpeta del mundo del servidor (ej. `world/`) y al archivo `usercache.json`.
+- Python 3.8 or higher.
+- Access to the server world folder (e.g., `world/`) and the `usercache.json` file.
+- **Linux Users:** You may need to install the graphical interface library manually: `sudo apt install python3-tk`.
 
-**Dependencias (gestionadas automáticamente):**
+**Dependencies (managed automatically):**
 
-- `ttkbootstrap` (Para el tema moderno y oscuro).
-- `requests` (Para consultas a la API de Mojang).
+- `ttkbootstrap` (For the modern theme).
+- `requests` (For Mojang and Ely.by API queries).
 
-### Ejecución
+### Execution
 
 ```bash
 python main.py
 ```
 
-📖 Guía de Uso (Flujo de 5 Pasos)
-
-La interfaz está dividida en pestañas que te guían paso a paso:
-
-🏁 Intro & Mode: Selecciona el modo de conversión (ej. Online a Offline).
-
-📂 World Selection: Carga la carpeta de tu mundo (ej. C:/servidor/world) y tu archivo usercache.json.
-
-🔍 Usercache: Revisa la lista de jugadores detectados en la caché del servidor.
-
-🗺️ UUID Mapping (El cerebro): Aquí verás el análisis. Selecciona los jugadores y usa el botón "Calculate Offline UUIDs" para que el script determine a qué archivos renombrar los datos.
-
-🚀 Convert: Revisa el resumen final y presiona Start Conversion. Los archivos se copiarán con sus nuevos nombres instantáneamente.
-📂 ¿Qué datos se convierten?
-
-El script busca y renombra archivos de forma segura en las siguientes subcarpetas del mundo:
-
-playerdata/ (Inventarios, posición, salud, Enderchest)
-
-stats/ (Estadísticas de minado, muertes, tiempo de juego)
-
-advancements/ (Logros desbloqueados)
-
-skinrestorer/ (Datos del plugin de skins, si existe)
-🏗️ Arquitectura del Código
-
-El proyecto sigue una arquitectura modular y limpia para facilitar su mantenimiento:
-
-main.py: Punto de entrada y configuración de DPI para Windows.
-
-app.py: Controlador principal de la GUI.
-
-logic.py: Motor de conversión de archivos (I/O).
-
-queue_manager.py: Sistema de cola para actualizar la UI desde hilos de trabajo.
-
-ui_builder.py / ui_components.py: Construcción de widgets y temas (Treeviews, Tabs).
-
-# 📝 TO-DO
-
-## 📚 Documentación y Notas Técnicas (README)
-- [ ] **Compatibilidad Linux:** Documentar que el script fuerza el renombrado en *minúsculas estrictas* (Case-Sensitive) para evitar pérdida de datos en servidores Linux.
-- [ ] **Sistema de Backups:** Explicar la nueva arquitectura de seguridad que crea la carpeta `/uuid_backups/` con *timestamps* para evitar sobrescrituras accidentales.
-- [ ] **Optimización (Anti-Lag):** Detallar que la GUI limita la visualización a los últimos 2,000 jugadores para proteger la RAM, mientras el backend procesa el 100% de la base de datos usando *Multi-threading*.
-- [ ] **Advertencia GeyserMC (Bedrock):** Añadir nota crítica sobre la conversión "Bedrock a Java":
-    - El script elimina prefijos (`.`, `*`).
-    - **Efecto:** Fusiona inventarios con cuentas de PC (ideal para migraciones), pero puede desconectar el inventario móvil si se planea seguir jugando en Bedrock.
-
-## 🛠️ Roadmap y Desarrollo Futuro (v2.x)
-- [ ] **Soporte Nativo NBT (1.20.5+):**
-    - [ ] Investigar integración con librería `nbtlib`.
-    - [ ] Implementar modificación interna del archivo `.dat` (además del renombrado de archivo) para cambiar la etiqueta binaria `UUID: [I;...]`.
-    - *Objetivo:* Evitar que las versiones modernas regeneren el inventario a cero por discrepancia de UUID interno.
+````
 
 ---
 
-⚖️ Licencia
+## 📖 Usage Guide (5-Step Flow)
 
-Este proyecto es de uso libre para la comunidad de administradores de servidores de Minecraft.
+1. 🏁 **Intro & Mode:** Select the mode (e.g., Offline -> Online) so the script knows which UUIDs to search for.
+2. 📂 **World Selection:** Load your world folder and assign the `usercache.json` file.
+3. 🔍 **Usercache:** Review the raw data detected in the cache.
+4. 🗺️ **UUID Mapping (The Brain):** Select players and use `Search Online` or manually edit their destinations. You can import/export mappings in `.json` format here.
+5. 🚀 **Convert:** Review the final plan and press `Start Conversion`. The script will create a processed copy in the `converted_worlds` folder.
+
+---
+
+## 📝 Technical Notes and Documentation
+
+### 🐧 Linux Compatibility and Security
+
+The script forces strict renaming, respecting case-sensitivity, preventing reading errors when migrating data to Linux-hosted servers.
+
+### ⚡ Anti-Lag Optimization (RAM Protection)
+
+When analyzing servers with thousands of players, the GUI limits the display to the **2,000 most recent players** to protect system RAM. However, the logical engine processes and migrates **100% of the files** found in the world folder.
+
+### ⚠️ Warning about GeyserMC (Bedrock to Java)
+
+When converting Bedrock accounts, the script automatically cleans common prefixes like `.` or `*`.
+
+- **Advantage:** Ideal for merging progress of a mobile player who purchased the PC version.
+- **Critical Note:** If the player intends to continue joining from Bedrock, this migration will "disconnect" their inventory from their original mobile account.
+
+### 🌐 Online Search Limits
+
+The `Search Online` function makes real requests to Mojang and Ely.by APIs. If you scan hundreds of players simultaneously, the process may take a few seconds to avoid API rate-limiting.
+
+---
+
+⚖️ **License**
+This project is free to use for the Minecraft server administrator community.
+**Author:** Tarquitet.
+
+```
+
+```
+````
