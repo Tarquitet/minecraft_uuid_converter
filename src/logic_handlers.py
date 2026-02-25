@@ -8,6 +8,7 @@ import threading
 from .constants import TARGET_FOLDERS, BEDROCK_PREFIX_REGEX
 from .helpers import offline_uuid_from_name, format_uuid
 from .logic import process_world
+from tkinter import messagebox
 
 # Importar requests de la misma manera que en app.py
 requests = None # Define la variable por si acaso
@@ -424,8 +425,8 @@ class LogicHandlers:
             nonlocal overall_done
             overall_done += n
             self.app.queue.put(("overall", min(overall_done, self.app.overall_progress['maximum'])))
-        def per_file_cb():
-            inc_overall(1)
+        def per_file_cb(amount_done=1):
+            inc_overall(amount_done)
         try:
             log(f"Starting conversion for: {working_path} (Mode: {'Offline -> Online' if self.app.conversion_mode == 'oto' else 'Online -> Offline'})")
             world_name = os.path.basename(os.path.normpath(working_path))

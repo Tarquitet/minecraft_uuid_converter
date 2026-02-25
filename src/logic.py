@@ -46,7 +46,7 @@ def process_world(world_path, conversions, create_backup, log_fn, progress_callb
                         
                         # 🛠️ CORRECCIÓN #4: Actualizar UI solo cada 50 archivos
                         if progress_callback and (ops % 50 == 0):
-                            progress_callback()
+                            progress_callback(50)  # Incrementar la barra de progreso en 50
         except Exception as e:
             log_fn(f"❌ Error scanning {folder_path}: {e}")
             

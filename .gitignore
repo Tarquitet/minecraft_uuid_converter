@@ -1,0 +1,3 @@
+# Ignorar carpetas generadas por la aplicación (mundos de Minecraft)
+working_worlds/
+converted_worlds/

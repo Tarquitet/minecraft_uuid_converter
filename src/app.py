@@ -189,17 +189,87 @@ class UUIDConverterApp:
 
     # --- Métodos de edición manual (Tab 4) ---
     def _edit_selected_mapping(self):
-        # ... (copia aquí el código de _edit_selected_mapping de tu v0.2.18 original) ...
-        # Por brevedad, no lo incluyo completo aquí, pero asegúrate de tenerlo
-        pass # Reemplaza con el código real
+        import tkinter.simpledialog as sd
+        selected = self.found_tv.selection()
+        if not selected:
+            messagebox.showwarning("No Selection", "Please select a player to edit.")
+            return
+        
+        item_id = selected[0]
+        # Recuperar los valores actuales (player, source_type, source_uuid, target_type, target_uuid)
+        values = self.found_tv.item(item_id, 'values')
+        
+        current_target = values[4] if len(values) > 4 else ""
+        new_uuid = sd.askstring("Edit Mapping", f"Enter new Target UUID for {values[0]}:", initialvalue=current_target)
+        
+        if new_uuid is not None:
+            new_uuid = new_uuid.strip()
+            if not new_uuid:
+                new_uuid = "NOT FOUND"
+                
+            # Crear la nueva tupla de valores
+            new_values = (values[0], values[1], values[2], "Manual Edit", new_uuid)
+            
+            # Actualizar la tabla visual
+            self.found_tv.item(item_id, values=new_values)
+            
+            # Actualizar los diccionarios internos
+            self.all_found_tv_items[item_id] = new_values
+            
+            # Actualizar la variable de Tkinter global para que el logic_handler la detecte al mover
+            tk_var_name = item_id + "_values"
+            try:
+                self.root.setvar(tk_var_name, new_values)
+            except tk.TclError:
+                pass # Ignorar si la variable no existía previamente
+            
+            self._append_log(f"Mapping manually updated for {values[0]} -> {new_uuid}")
 
     def _import_mappings(self):
-        # ... (copia aquí el código de _import_mappings de tu v0.2.18 original) ...
-        pass # Reemplaza con el código real
+        filepath = filedialog.askopenfilename(filetypes=[("JSON Files", "*.json")])
+        if not filepath:
+            return
+        try:
+            import json
+            with open(filepath, 'r') as f:
+                import_data = json.load(f)
+            
+            imported_count = 0
+            for src_uuid, tgt_uuid in import_data.items():
+                item_id = f"imported_{src_uuid}"
+                values = ("Imported Player", "Imported JSON", src_uuid, "Manual Edit", tgt_uuid)
+                self.all_map_tv_items[item_id] = values
+                imported_count += 1
+                
+            self._toggle_map_view() # Refrescar la tabla final (Tab 5)
+            messagebox.showinfo("Success", f"Imported {imported_count} mappings from JSON.")
+            self._append_log(f"Imported {imported_count} mappings from {filepath}.")
+        except Exception as e:
+            messagebox.showerror("Error", f"Failed to import JSON: {e}")
 
     def _export_mappings(self):
-        # ... (copia aquí el código de _export_mappings de tu v0.2.18 original) ...
-        pass # Reemplaza con el código real
+        if not self.all_map_tv_items:
+            messagebox.showwarning("Empty", "No mappings to export in the final map.")
+            return
+        filepath = filedialog.asksaveasfilename(defaultextension=".json", filetypes=[("JSON Files", "*.json")])
+        if not filepath:
+            return
+        try:
+            import json
+            export_data = {}
+            for item_id, values in self.all_map_tv_items.items():
+                # Guardamos la relación {Source UUID : Target UUID}
+                source_uuid = values[2]
+                target_uuid = values[4]
+                if target_uuid and target_uuid != "Pending...":
+                    export_data[source_uuid] = target_uuid
+                    
+            with open(filepath, 'w') as f:
+                json.dump(export_data, f, indent=4)
+            messagebox.showinfo("Success", "Mappings exported successfully.")
+            self._append_log(f"Exported mappings to {filepath}.")
+        except Exception as e:
+            messagebox.showerror("Error", f"Failed to export JSON: {e}")
 
     # --- Métodos de utilidad (usados en varios lados) ---
     def _open_folder(self, path):
